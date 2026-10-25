@@ -1,4 +1,4 @@
-# The server browser for Bench's browser threads: a headed Chromium (on Xvfb), the Playwright MCP
+# browser-server-mcp, a shared server browser: a headed Chromium (on Xvfb), the Playwright MCP
 # for the agent, and the /live gateway for the people who watch and step in.
 # Chromium runs on its own and the MCP attaches over CDP, so tabs and sign-ins survive clients
 # reconnecting and the MCP restarting.

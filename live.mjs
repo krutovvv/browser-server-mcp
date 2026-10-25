@@ -1,4 +1,4 @@
-// The live view of the browser's tabs for Bench: wss://browser.example.com/live (proxy → :8932).
+// The live view of the browser's tabs for people (Bench's /browser insert, any client): wss://browser.example.com/live (proxy → :8932).
 //
 // Why apart from the MCP: the MCP is the agent's channel (tool calls); this is the picture for the
 // people, to see what the agent does and to step in. Raw CDP is never exposed: it can do anything
@@ -224,7 +224,7 @@ async function wake(id) {
 	return targetId;
 }
 
-// ---- the WebSocket for Bench -----------------------------------------------------------
+// ---- the WebSocket for the people -----------------------------------------------------------
 const server = createServer((req, res) => {
 	res.writeHead(req.url === "/live/health" ? 200 : 404);
 	res.end(req.url === "/live/health" ? "ok" : "");
