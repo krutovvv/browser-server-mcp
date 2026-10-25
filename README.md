@@ -35,7 +35,7 @@ it writes every operation to `/data/live-audit.log`.
 ## Set it up
 
 ```bash
-git clone <this repository> browser-server-mcp
+git clone https://github.com/krutovvv/browser-server-mcp.git
 cd browser-server-mcp
 cp .env.example .env        # the host, the MCP's password (htpasswd -nb agent <password>), the language
 docker compose up -d --build
