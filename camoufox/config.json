@@ -1,0 +1,11 @@
+{
+  "browser": {
+    "camoufoxOptions": {
+      "os": "windows",
+      "geoip": true,
+      "locale": "ru-RU",
+      "humanize": true,
+      "window": [1600, 950]
+    }
+  }
+}

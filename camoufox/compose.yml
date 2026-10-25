@@ -1,0 +1,15 @@
+# Build the image first: docker build -t browser:latest .
+services:
+  browser:
+    image: browser:latest
+    container_name: browser
+    restart: unless-stopped
+    shm_size: 2gb
+    ports:
+      - "10150:8931"   # the MCP for the agent: http://<host>:10150/mcp; the live view for Bench: ws://<host>:10150/live
+      - "10151:6080"   # noVNC web: http://<host>:10151/ (no password; set VNC_PASSWORD to require one, VNC=0 to disable)
+    environment:
+      - TZ=Europe/Moscow
+    volumes:
+      - ./data:/data   # profile (cookies), config.json, output
+    mem_limit: 4g
