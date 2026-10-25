@@ -41,7 +41,7 @@ for i in $(seq 100); do curl -sf http://127.0.0.1:9222/json/version >/dev/null &
   echo "mcp exited ($?), restarting in 2s"; sleep 2
 done) &
 
-# The people's channel: the live view of the tabs for Bench (/live, personal keys, watching and
+# The people's channel: the live view of the tabs (/live, personal keys, watching and
 # input only) — see live.mjs.
 (while true; do
   node /opt/live.mjs &

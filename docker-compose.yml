@@ -1,4 +1,4 @@
-# The server browser for Bench's browser threads. Settings in .env (see .env.example).
+# browser-server-mcp: a shared server browser as an MCP server (and a live view for people). Settings in .env (see .env.example).
 #   docker compose up -d --build
 name: bench-browser
 services:

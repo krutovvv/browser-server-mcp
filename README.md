@@ -1,10 +1,14 @@
-# The server browser
+# browser-server-mcp
 
-A browser on your own server for Bench's **browser threads**. The agent drives a real Chrome
-through the [Playwright MCP](https://github.com/microsoft/playwright-mcp); in Bench every step the
-agent takes there shows as the page itself, live, inside its answer, where you can click and type
-to step in. Sign-ins stay in the browser's profile, so a site you signed in to once stays signed
-in for the agent and for everyone who works with it.
+A shared Chrome on your own server, served as an **MCP server**. An agent drives a real browser
+through the [Playwright MCP](https://github.com/microsoft/playwright-mcp); people can watch the
+same tabs live and step in (click, type) through a small gateway. Sign-ins stay in the browser's
+profile, so a site you signed in to once stays signed in for the agent and for everyone who works
+with it.
+
+Any MCP client can use the browser. The live view is a plain WebSocket protocol; [Bench](https://github.com/krutovvv/bench)
+supports it out of the box (its `/browser` insert shows the thread's tab live, see
+[Clients](#clients)).
 
 One container, three processes and a guard:
 
@@ -31,8 +35,8 @@ it writes every operation to `/data/live-audit.log`.
 ## Set it up
 
 ```bash
-git clone https://github.com/krutovvv/bench.git
-cd bench/browser-server
+git clone <this repository> browser-server-mcp
+cd browser-server-mcp
 cp .env.example .env        # the host, the MCP's password (htpasswd -nb agent <password>), the language
 docker compose up -d --build
 curl https://browser.example.com/live/health    # ok
@@ -46,15 +50,27 @@ docker compose exec browser node /opt/live.mjs list
 docker compose exec browser node /opt/live.mjs remove anna
 ```
 
-## Connect Bench
+## Clients
 
-**The live view**, on each person's Mac, in `~/.bench/ui/browser.json`:
+**Any MCP client**: the server is `https://browser.example.com/mcp` (streamable HTTP) with the
+header `Authorization: Basic <base64 of agent:password>` (`printf 'agent:password' | base64`).
+
+**The live view** is `wss://browser.example.com/live?token=<a person's key>`: JSON messages for
+the tabs, watching one (JPEG frames), opening, closing, the mouse, the wheel, typing and keys
+(`live.mjs` is the whole protocol). `https://browser.example.com/live/health` answers `ok`.
+
+### Bench
+
+[Bench](https://github.com/krutovvv/bench) has a `/browser` insert: the thread's own tab, shown
+live inside the conversation.
+
+The live view, on each person's Mac, in `~/.bench/ui/browser.json`:
 
 ```json
 { "url": "wss://browser.example.com/live", "token": "<their key>" }
 ```
 
-**The agent**: add the browser to its MCP servers, `~/.bench/agents/<agent>/mcp.json`:
+The agent: add the browser to a project's MCP servers (`mcp.json`):
 
 ```json
 {
@@ -62,7 +78,7 @@ docker compose exec browser node /opt/live.mjs remove anna
     "browser": {
       "url": "https://browser.example.com/mcp",
       "headers": { "Authorization": "${BROWSER_MCP_AUTH}" },
-      "description": "The server browser; Bench shows its tabs live in browser threads.",
+      "description": "The server browser; Bench shows its tabs live in browser inserts.",
       "exposure": "deferred",
       "toolExposure": {
         "browser_tabs": "direct", "browser_navigate": "direct", "browser_snapshot": "direct",
@@ -74,19 +90,19 @@ docker compose exec browser node /opt/live.mjs remove anna
 }
 ```
 
-and the password as a service key (Bench: Settings → Providers → Service keys):
-`BROWSER_MCP_AUTH` = `Basic <base64 of agent:password>` (`printf 'agent:password' | base64`).
+and the password as a service key (Bench: the gear → Providers → Service keys):
+`BROWSER_MCP_AUTH` = `Basic <base64 of agent:password>`.
 
-Then the **+** next to Browser in Bench's sidebar starts a browser thread. To sign in to a site
-once, ask the agent to open it, and sign in yourself right in the page shown in the thread.
+Then `/browser` in a thread puts the browser in. To sign in to a site once, ask the agent to open
+it, and sign in yourself right in the page shown in the thread.
 
 ## Kept light
 
 The view is for watching and stepping in, not for browsing, and one small container serves a team:
 
 - **At most two frames a second**, and only while someone watches: the gateway holds each
-  frame's acknowledgement for `LIVE_FRAME_GAP_MS` (500 ms); Bench stops watching when nobody has
-  touched the thread for a minute and the agent is idle.
+  frame's acknowledgement for `LIVE_FRAME_GAP_MS` (500 ms); a client should stop watching when nobody
+  looks (Bench does after a minute untouched with the agent idle).
 - **A memory budget.** A heavy tab costs 200–450 MB. At most `LIVE_TABS` (3) tabs stay awake; the
   least recently touched one nobody watches falls asleep — a screenshot and its address are kept,
   the tab is closed, and it opens again when someone clicks it. Past `LIVE_HARD_TABS` (5) tabs in
