@@ -3,7 +3,7 @@
 A second kind of server browser for Bench's `/browser` insert: [Camoufox](https://camoufox.com)
 (an anti-detect Firefox), driven by the agent through
 [camoufox-playwright-mcp](https://github.com/chandu-cpz/camoufox-playwright-mcp) (the Playwright
-MCP's tools, in Python). Use it where sites turn a Chrome away; the shared Chrome is `../`.
+MCP's tools, in Python). Use it where sites turn a Chrome away; the Chrome is the repository's root.
 
 One container: Xvfb, Camoufox (headed), and one Python process, `live.py`, that is the MCP on
 `:8931/mcp` and the live view on `:8931/live`. The view is in the MCP's own process because the MCP

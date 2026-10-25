@@ -1,6 +1,14 @@
-# The server browser
+# browser-server
 
-A browser on your own server for Bench's **browser threads**. The agent drives a real Chrome
+An MCP server: a browser on your own server for an AI agent, with a live view for the people who
+work with it. Bench (https://github.com/krutovvv/bench) shows it in its `/browser` insert, but to
+the agent it is an ordinary MCP server in its `mcp.json`. Two kinds, the same live protocol:
+
+- **Chrome** (this folder): Chromium + the Playwright MCP + `live.mjs`.
+- **Camoufox** ([`camoufox/`](camoufox/README.md)): an anti-detect Firefox + camoufox-playwright-mcp,
+  the live view in the MCP's own process (`live.py`), for sites that turn a Chrome away.
+
+The Chrome, in detail: a browser on your own server for Bench's **browser threads**. The agent drives a real Chrome
 through the [Playwright MCP](https://github.com/microsoft/playwright-mcp); in Bench every step the
 agent takes there shows as the page itself, live, inside its answer, where you can click and type
 to step in. Sign-ins stay in the browser's profile, so a site you signed in to once stays signed
@@ -31,8 +39,8 @@ it writes every operation to `/data/live-audit.log`.
 ## Set it up
 
 ```bash
-git clone https://github.com/krutovvv/bench.git
-cd bench/browser-server
+git clone <this repository> browser-server
+cd browser-server
 cp .env.example .env        # the host, the MCP's password (htpasswd -nb agent <password>), the language
 docker compose up -d --build
 curl https://browser.example.com/live/health    # ok
